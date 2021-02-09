@@ -81,6 +81,7 @@ mod.directive('infiniteScroll', [
           }
           if (shouldScroll) {
             checkWhenEnabled = true;
+            console.log('ngInfiniteScroll shouldScroll');
             if (scrollEnabled) {
               if (scope.$$phase || $rootScope.$$phase) {
                 return scope.infiniteScroll();
@@ -90,6 +91,7 @@ mod.directive('infiniteScroll', [
             }
           } else if (shouldScrollTop) {
             checkWhenEnabled = true;
+            console.log('ngInfiniteScroll shouldScrollTop');
             if (scrollTopEnabled) {
               if (scope.$$phase || $rootScope.$$phase) {
                 return scope.infiniteScrollTop();
