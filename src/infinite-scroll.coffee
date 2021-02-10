@@ -69,7 +69,7 @@ mod.directive 'infiniteScroll', ['$rootScope', '$window', '$interval', 'THROTTLE
 
         remaining = elementBottom - containerBottom
         shouldScroll = remaining <= height(container) * scrollDistance + 1
-        
+
         remainingTop = containerTopOffset - offsetTop(elem)
         shouldScrollTop = remainingTop <= height(container) * scrollDistance + 1
       else

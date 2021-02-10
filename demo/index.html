@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+  <script src="../build/ng-infinite-scroll.js"></script>
+  <meta charset="utf-8">
+  <title>Demo</title>
+  <style>
+    #container {
+        height: 600px;
+        overflow-y: scroll;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <div ng-app='myApp' ng-controller='DemoController' id='container' reverse>
+
+    <div infinite-scroll='loadMore()' infinite-scroll-top='loadMoreTop()' infinite-scroll-container="'#container'">
+      <img ng-repeat='image in images track by image.num' ng-src='http://placehold.it/225x250&text={{image.num}}' on-finish-render>
+    </div>
+  </div>
+
+  <script>
+
+var myApp = angular.module('myApp', ['infinite-scroll']);
+
+myApp.controller('DemoController', function($scope) {
+    $scope.images = [{
+      num: 1
+    }, {
+      num: 2
+    }, {
+      num: 3
+    }, {
+      num: 4
+    }, {
+      num: 5
+    }, {
+      num: 6
+    }, {
+      num: 7
+    }, {
+      num: 8
+    }];
+
+    $scope.loadMore = function() {
+      var last = $scope.images[$scope.images.length - 1];
+      for (var i = 1; i <= 8; i++) {
+        $scope.images.push({
+          num: last.num + i
+        });
+      }
+    };
+
+    $scope.loadMoreTop = function() {
+      console.log('loadMoreTop at ' + new Date());
+      var first = $scope.images[0];
+      var toPrepend = [];
+      for (var i = 1; i <= 8; i++) {
+        toPrepend.unshift({
+          num: first.num - i
+        });
+      }
+
+      [].unshift.apply($scope.images, toPrepend);
+    };
+  })
+  .directive('reverse', function($timeout) {
+    return {
+      link: function($scope, element) {
+
+        $scope.$on('ngRepeatAppendFinished', function() {
+          console.log('ngRepeatAppendFinished');
+        });
+
+        $scope.$on('ngRepeatPrependFinished', function() {
+          console.log('ngRepeatPrependFinished');
+
+          var heightBefore = element.prop('scrollHeight');
+          var scrollPositionBefore = element.scrollTop();
+
+          $timeout(function() {
+            // Update scroll position, use it to your own dimensions
+            element.scrollTop(225);
+          }, 200);
+        });
+      }
+    };
+  }).directive('onFinishRender', function($timeout) {
+    var initialized = false;
+    return {
+      restrict: 'A',
+      link: function(scope, element, attr) {
+        if (scope.$last === true) {
+          initialized = true;
+          $timeout(function() {
+            scope.$emit('ngRepeatAppendFinished');
+          });
+        } else if (scope.$first === true && initialized) {
+          scope.$emit('ngRepeatPrependFinished');
+        }
+      }
+    };
+  });
+  </script>
+
+
+</body>
+
+</html>
